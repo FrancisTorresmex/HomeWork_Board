@@ -1,0 +1,9 @@
+﻿.cardDraggableItem {
+    border-color: darkgray;
+}
+
+#allTasks {
+    position:absolute;
+    top: 39px;
+    left: 0;
+}
