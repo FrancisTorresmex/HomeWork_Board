@@ -1,7 +1,14 @@
+using HomeWork_Board.Database;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//local data base
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite("Data Source=HomeWorkBoard.db"));
 
 var app = builder.Build();
 

@@ -1,9 +1,66 @@
-﻿.cardDraggableItem {
+﻿/* Contenedor de lista de tareas */
+
+#containerTasks {
+    position: absolute;
+    top: 10vh;
+    left: 3vh;
+    right: 3vh;
+    overflow: auto;
+    bottom: 10vh;
+}
+
+
+/* Contenedor de tareas */
+
+#allTasks {
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* Card de tarea */
+
+.cardDraggableItem {
     border-color: darkgray;
 }
 
-#allTasks {
-    position:absolute;
-    top: 39px;
-    left: 0;
+.titleLabel {
+    font-size: 15pt;
+}
+
+.deleteTaskCls {
+    border: none;
+    border-radius: 50%;
+    background-color: whitesmoke;
+}
+
+.btnBarTask {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btnAddTask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 80%;
+    width: 60px;
+    height: 60px;
+    font-size: 2em;
+}
+
+/* Circulo de color */
+.colorTask {
+    outline: none;
+    border-radius: 50%;
+    outline: none;
+    width: 20px;
+    padding-bottom: 20px;
+    -webkit-appearance: none;
+}
+
+.colorTask::-webkit-color-swatch {
+    border: none;
+    padding-bottom: 20px;
+    border-radius: 50%;
 }
