@@ -49,18 +49,22 @@ $(document).on("click", "#addTask", function () {
 
     var idTaskDraggable = $("#Itemdraggable" + idRandom).attr("id");
     $("#" + idTaskDraggable).draggable({ //Contenedor donde se arrastra
-        containment: "#containerTasks",
+        containment: "#allTasks",
         cursor: 'move',
         scroll: true,
         scrollSensitivity: 100,
-        scrollSpeed: 100
+        scrollSpeed: 100,
+        stop: function (event, ui) {
+            var position = ui.position;
+            editTask(idRandom, position);
+        }
     });
 
-    $("#" + idTaskDraggable).position({
-        my: "-2px",
-        at: "-12.3438px",
-        of: "#allTasks"
-    });
+    //$("#" + idTaskDraggable).position({
+    //    my: "-2px",
+    //    at: "-12.3438px",
+    //    of: "#allTasks"
+    //});
 
     changeColorTask(idRandom);
     addTaskToList(idRandom);
@@ -75,24 +79,29 @@ function chargeCreateTaskInitial(taskObj) {
 
     var idTaskDraggable = $("#Itemdraggable" + taskObj.id).attr("id");
     $("#" + idTaskDraggable).draggable({ //Contenedor donde se arrastra
-        containment: "#containerTasks",
+        containment: "#allTasks",
         cursor: 'move',
         scroll: true,
         scrollSensitivity: 100,
-        scrollSpeed: 100
+        scrollSpeed: 100,
+        stop: function (event, ui) {
+            var position = ui.position;
+            editTask(taskObj.id, position);
+        }
     });
 
     $("#lblTitle" + taskObj.id).text(taskObj.title);
     $("#lblDesc" + taskObj.id).text(taskObj.description);
     $('#colorTask' + taskObj.id).val(taskObj.color);
 
+    $('#Itemdraggable' + taskObj.id).css({ top: taskObj.top, left: taskObj.left });
     $('#Itemdraggable' + taskObj.id).css("border-color", "darkgray");
     $('#Itemdraggable' + taskObj.id).css("border-width", "4px");
     $('#Itemdraggable' + taskObj.id).css("border-style", "solid");
 
     //$("#" + idTaskDraggable).position({
-    //    my: "-2px",
-    //    at: "-12.3438px",
+    //    my: taskObj.top.toString(),
+    //    at: taskObj.left.toString(),
     //    of: "#allTasks"
     //});
 
@@ -122,7 +131,7 @@ function addTaskToList(idTask) {
 
 }
 
-function editTask(idTask) {
+function editTask(idTask, newPositionTsk = null) {
     var taskEditObj = $.grep(lstTask, function (tsk) { //revisa si existe el objeto, retorna el objeto [0], que solo deberia encontrar uno con esa id, y retorna ese objeto
         return tsk.id == idTask
     })[0];
@@ -130,6 +139,10 @@ function editTask(idTask) {
     if (taskEditObj) { //se eedita el objeto en la lista
 
         var positionTask = $("#Itemdraggable" + idTask).position();
+        if (newPositionTsk != null) {
+            positionTask.top = newPositionTsk.top;
+            positionTask.left = newPositionTsk.left;
+        }
 
         taskEditObj.id = idTask;
         taskEditObj.title = $("#lblTitle" + idTask).text();
@@ -146,6 +159,15 @@ function editTask(idTask) {
 function createIdRandom() {
     var idRandom = Math.random().toString(36).substr(2, 18);
     return idRandom;
+}
+
+/* Eliminar tarea */
+function deleteTask(idTask) {    
+    ajaxTask('/Home/DeleteTask?idTask=' + idTask, 'DELETE', deleteTaskSuccess);
+}
+
+function deleteTaskSuccess(data) {
+
 }
 
 /* Cambiar color task */
@@ -240,6 +262,7 @@ $(document).on("click", ".deleteTaskCls", function (event) {
     var justId = idTaskDelete.replace("deleteTask", "");
 
     $('#Itemdraggable' + justId).remove();
+    deleteTask(justId);
     
 });
 

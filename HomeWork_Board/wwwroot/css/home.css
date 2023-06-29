@@ -1,25 +1,35 @@
 ﻿/* Contenedor de lista de tareas */
 
-#containerTasks {
-    position: absolute;
-    top: 10vh;
-    left: 3vh;
-    right: 3vh;
-    overflow: auto;
-    bottom: 10vh;
-}
+/*#containerTasks {
+    position: relative;*/
+    /*height: 100vh;
+    width: 100vw;*/
+    /*height:auto;
+    width:auto;
+    overflow: auto;*/
+    /*z-index: 999;*/
+/*}*/
 
 
-/* Contenedor de tareas */
 
 #allTasks {
-    min-width: 100%;
-    min-height: 100%;
+    position: relative;
+    /*height: 100vh;
+    width: 100vw;*/
+    top: 0vh;
+    min-height: 74vh;
+    min-width: 100vw;
+    /*left: 3vh;
+    right: 3vh;*/
+    overflow-y: auto;
+    overflow-x:auto;
+      
 }
 
 /* Card de tarea */
 
 .cardDraggableItem {
+    position: absolute;
     border-color: darkgray;
 }
 
@@ -45,6 +55,7 @@
     border: none;
     border-radius: 80%;
     width: 60px;
+    margin-left: 50px;
     height: 60px;
     font-size: 2em;
 }

@@ -78,6 +78,25 @@ namespace HomeWork_Board.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTask(string idTask)
+        {
+            try
+            {
+                var taskElement = _context.Task.FirstOrDefault(x => x.Id == idTask);
+                if (taskElement != null)
+                {
+                    _context.Remove(taskElement);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Ok();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
