@@ -48,7 +48,7 @@
     justify-content: space-between;
 }
 
-.btnAddTask {
+.btnAddTask, .btnChangeMode {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,6 +58,16 @@
     margin-left: 50px;
     height: 60px;
     font-size: 2em;
+}
+
+#changeModeImg {
+    width: 50px;
+}
+
+.sectionBtn {
+    padding-right: 50px;
+    display: flex;
+    place-content: space-between;
 }
 
 /* Circulo de color */

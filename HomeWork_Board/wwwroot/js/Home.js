@@ -1,5 +1,6 @@
 var lstTask = [];
 var lstTaskInitial = [];
+var isModeDay = true;
 
 $(document).ready(function () {
     //$("#ItemdraggablexId").draggable({
@@ -287,4 +288,23 @@ function ajaxTask(url, type, data, funSucess) {
     });
 }
 
+/* Cambiar modo día y noche */
+$(document).on("click", "#changeMode", function () {
+    if (isModeDay) {
+        isModeDay = !isModeDay;
+        $("#bodyInitial").css("background-color", "black");
+        $("#changeModeImg").attr("src", "Images/HomeWorkBoard_Night.png");
+        $(".footer").css("background-color", "#141314");
+        $(".navbar").css("background-color", "#141314");
+        $(".txtColorMode").css("color", "white");
+    }
+    else {
+        isModeDay = !isModeDay;
+        $("#bodyInitial").css("background-color", "white");
+        $("#changeModeImg").attr("src", "Images/HomeWorkBoard_Day.png");
+        $(".footer").css("background-color", "white");
+        $(".navbar").css("background-color", "white");
+        $(".txtColorMode").css("color", "black");
+    }
+});
 

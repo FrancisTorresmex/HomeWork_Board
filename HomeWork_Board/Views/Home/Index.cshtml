@@ -1,10 +1,14 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
 <link rel="stylesheet" href="~/css/home.css" />
 
-<button class="btnAddTask" id="addTask">+</button>
+<div class="col-md-12 sectionBtn">
+    <button class="btnAddTask" id="addTask">+</button>
+    <button class="btnChangeMode" id="changeMode"><img id="changeModeImg" src="Images/HomeWorkBoard_Day.png" /></button>
+</div>
+
 
 <div id="allTasks">
     @*aqui van los div dinamicos*@
