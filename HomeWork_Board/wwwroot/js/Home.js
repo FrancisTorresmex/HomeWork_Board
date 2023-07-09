@@ -89,6 +89,8 @@ function chargeCreateTaskInitial(taskObj) {
             var position = ui.position;
             editTask(taskObj.id, position);
         }
+    }).on('touchstart', function () { //mover en celuar (touchstart)
+        $(this).draggable();
     });
 
     $("#lblTitle" + taskObj.id).text(taskObj.title);
@@ -110,6 +112,8 @@ function chargeCreateTaskInitial(taskObj) {
 
     $('#colorTask' + taskObj.id).trigger('change'); //invocar el change al inicio
     lstTask.push(taskObj);
+
+
 
 }
 
@@ -290,6 +294,12 @@ function ajaxTask(url, type, data, funSucess) {
 
 /* Cambiar modo día y noche */
 $(document).on("click", "#changeMode", function () {
+
+    //js
+    var container = document.querySelector('#allTasks');
+    
+
+    //jquery
     if (isModeDay) {
         isModeDay = !isModeDay;
         $("#bodyInitial").css("background-color", "black");
@@ -297,6 +307,14 @@ $(document).on("click", "#changeMode", function () {
         $(".footer").css("background-color", "#141314");
         $(".navbar").css("background-color", "#141314");
         $(".txtColorMode").css("color", "white");
+        $("#allTasks::-webkit-scrollbar-track").css("background-color", "red");
+
+        //js
+        //var scrollbarTrack = document.querySelector('#allTasks ::-webkit-scrollbar-track');
+        //const scrollbarThumb = document.querySelector('#allTasks ::-webkit-scrollbar-thumb');
+        //scrollbarThumb.background = "blue";
+        //scrollbarTrack.background = "white";
+        
     }
     else {
         isModeDay = !isModeDay;
@@ -305,6 +323,13 @@ $(document).on("click", "#changeMode", function () {
         $(".footer").css("background-color", "white");
         $(".navbar").css("background-color", "white");
         $(".txtColorMode").css("color", "black");
+
+        //js
+        //var scrollbarTrack = document.querySelector('#allTasks ::-webkit-scrollbar-track');
+        //const scrollbarThumb = document.querySelector('#allTasks ::-webkit-scrollbar-thumb');
+        //scrollbarThumb.background = "red";
+        //scrollbarTrack.background = "dark";
+        
     }
 });
 
