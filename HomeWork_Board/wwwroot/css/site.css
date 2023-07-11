@@ -19,8 +19,9 @@ body {
 .containerInicial {
     /*width: 100% !important;*/
     /*height: 100% !important;*/
-    min-height: 90vh;    
+    min-height: calc(100vh - 80px);        
     margin: 0% !important;
+
 }
 
 /*.container {
@@ -38,13 +39,17 @@ body {
 }
 
 
+header {
+    min-height: 40px;
+}
 
 .footer {
     /*position:static;*/
+    min-height:40px;
 }
 
 #iconNavBar {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border-radius: 60%;
 }
