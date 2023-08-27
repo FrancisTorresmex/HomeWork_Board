@@ -1,5 +1,6 @@
 var lstTask = [];
 var lstTaskInitial = [];
+var lstTxtBox = [];
 var isModeDay = true;
 
 $(document).ready(function () {
@@ -7,6 +8,7 @@ $(document).ready(function () {
     //    containment: "#containerTasks"
     //});
     ajaxTask('/Home/GetTask', 'GET', null, successGetTasks);
+    ajaxTask('/Home/GetTxtBox', 'GET', null, successGetTextBox);
 });
 
 function successGetTasks(data) { //Cargar tareas guardadas
@@ -15,6 +17,12 @@ function successGetTasks(data) { //Cargar tareas guardadas
     });
     
     
+}
+
+function successGetTextBox(data) {
+    $.each(data, function (idx, txtBox) {
+        chargeCreateTextBoxInitial(txtBox);
+    })
 }
 
 /* Agregar tarea */
@@ -44,14 +52,15 @@ $(document).on("click", "#addTask", function () {
     var idRandom = createIdRandom();
     var taskElement = taskDiv.replace(/xId/g, idRandom);
 
-
+    
     
     $("#allTasks").append(taskElement);
 
     var idTaskDraggable = $("#Itemdraggable" + idRandom).attr("id");
     $("#" + idTaskDraggable).draggable({ //Contenedor donde se arrastra
         containment: "#allTasks",
-        cursor: 'move',
+        //cursor: 'move',
+        cursor: 'grab',
         scroll: true,
         scrollSensitivity: 100,
         scrollSpeed: 100,
@@ -67,7 +76,7 @@ $(document).on("click", "#addTask", function () {
     //    of: "#allTasks"
     //});
 
-    changeColorTask(idRandom);
+    changeColorTask(idRandom, true);
     addTaskToList(idRandom);
 
 });
@@ -81,7 +90,8 @@ function chargeCreateTaskInitial(taskObj) {
     var idTaskDraggable = $("#Itemdraggable" + taskObj.id).attr("id");
     $("#" + idTaskDraggable).draggable({ //Contenedor donde se arrastra
         containment: "#allTasks",
-        cursor: 'move',
+        //cursor: 'move',
+        cursor: 'grab',
         scroll: true,
         scrollSensitivity: 100,
         scrollSpeed: 100,
@@ -108,7 +118,7 @@ function chargeCreateTaskInitial(taskObj) {
     //    of: "#allTasks"
     //});
 
-    changeColorTask(taskObj.id);
+    changeColorTask(taskObj.id, true);
 
     $('#colorTask' + taskObj.id).trigger('change'); //invocar el change al inicio
     lstTask.push(taskObj);
@@ -176,31 +186,51 @@ function deleteTaskSuccess(data) {
 }
 
 /* Cambiar color task */
-function changeColorTask(idTask) {
-    $('#colorTask' + idTask).change(function () {
-        var selectedColor = $(this).val();
-        colorTask(idTask, selectedColor);
+function changeColorTask(idTask, isTask = true) {
 
-        //Cambiar color de texto según si es oscuro el background
-        var rgb = getRgbColor(selectedColor);
-        var luminosidad = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
-        if (luminosidad < 0.5) {
-            $('#lblTitle' + idTask).css('color', 'white');
-            $('#lblDesc' + idTask).css('color', 'white');
-        } else {
-            $('#lblTitle' + idTask).css('color', 'black');
-            $('#lblDesc' + idTask).css('color', 'black');
-            $('#deleteTask' + idTask).css("color", 'black');
-        }
+    if (isTask) {
+        $('#colorTask' + idTask).change(function () {
+            var selectedColor = $(this).val();
+            colorTask(idTask, selectedColor, true);
 
-        editTask(idTask);
-        
-    });
+            //Cambiar color de texto según si es oscuro el background
+            var rgb = getRgbColor(selectedColor);
+            var luminosidad = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
+            if (luminosidad < 0.5) {
+                $('#lblTitle' + idTask).css('color', 'white');
+                $('#lblDesc' + idTask).css('color', 'white');
+            } else {
+                $('#lblTitle' + idTask).css('color', 'black');
+                $('#lblDesc' + idTask).css('color', 'black');
+                $('#deleteTask' + idTask).css("color", 'black');
+            }
+
+            editTask(idTask);
+
+        });
+    }
+    else {
+        $('#colortxtBo' + idTask).change(function () {
+            var selectedColor = $(this).val();
+            colorTask(idTask, selectedColor, false);
+            editTxtBox(idTask);
+
+        });
+    }
+    
 
 }
-function colorTask(idTask, color) {
-    $('#Itemdraggable' + idTask).css("background-color", color);
-    $('#deleteTask' + idTask).css("color", color);
+function colorTask(idTask, color, isTask) {
+
+    if (isTask) {
+        $('#Itemdraggable' + idTask).css("background-color", color);
+        $('#deleteTask' + idTask).css("color", color);
+    }
+    else {
+        $('#textBoxDraggable' + idTask).css("color", color);
+        $('#deleteTask' + idTask).css("color", color);
+    }
+    
 }
 
 function getRgbColor(color) {
@@ -221,7 +251,7 @@ $(document).on("click", '.titleLabel', function (event) { //al precionar dentro 
     $('#Itemdraggable' + justId).css("border-color", "orange");
     $('#Itemdraggable' + justId).css("border-width", "4px");
     $('#Itemdraggable' + justId).css("border-style", "solid");
-    $('#' + idTaskLblPressed).prop('contenteditable', true);
+    $('#' + idTaskLblPressed).prop('contenteditable', true).focus();
 });
 
 $(document).on("blur", '.titleLabel', function (event) { //al precionar fuera del label
@@ -245,7 +275,7 @@ $(document).on("click", '.descLabel', function (event) { //al precionar dentro d
     $('#Itemdraggable' + justId).css("border-color", "orange");
     $('#Itemdraggable' + justId).css("border-width", "4px");
     $('#Itemdraggable' + justId).css("border-style", "solid");
-    $('#' + idTaskLblPressed).prop('contenteditable', true);
+    $('#' + idTaskLblPressed).prop('contenteditable', true).focus();
 });
 
 $(document).on("blur", '.descLabel', function (event) { //al precionar fuera del label
@@ -291,6 +321,194 @@ function ajaxTask(url, type, data, funSucess) {
         }
     });
 }
+
+/* Agregar caja de texto */
+
+var textBox =
+
+    '<div id="textBoxDivDraggablexId" class="ui-widget-content textBoxDivDraggableItem" draggable="true"  style="display: inline-block;">' +
+
+    '<div class="col-md-12 btnBarTxtBox" id="btnBarBoxTxtxId" style="visibility:hidden">' +
+    '<button class="deleteTxtBoxCls" id="deleteTxtBoxId">X</button>' +
+    '<input id="colortxtBoxId" class="colorTask" type="color" value="#ff0000" id="color-picker" />' +
+    '</div >' +
+
+    '<div id="textBoxDraggablexId" class="textBoxDraggableItem text-center" contenteditable="false">New box text</div>' +
+
+    '</div>';
+    
+function chargeCreateTextBoxInitial(txtObj) {
+
+    var txtElement = textBox.replace(/xId/g, txtObj.id);
+
+    $("#allTasks").append(txtElement);
+
+    var idTxtBoxDraggable = $("#textBoxDivDraggable" + txtObj.id).attr("id");
+    $("#" + idTxtBoxDraggable).draggable({ //Contenedor donde se arrastra
+        containment: "#allTasks",
+        cursor: 'grab',
+        scroll: true,
+        scrollSensitivity: 50,
+        scrollSpeed: 50,
+        //start: function (event, ui) {
+        //    $(this).css('cursor', 'grab'); //al arrastrarlo ya saldra el cursor de mano
+        //},
+        stop: function (event, ui) {
+            var position = ui.position;
+            editTxtBox(txtObj.id, position);
+        }
+    }).on('touchstart', function () { //mover en celuar (touchstart)
+        $(this).draggable();
+    });
+
+    $("#textBoxDraggable" + txtObj.id).text(txtObj.description);    
+    $('#colortxtBo' + txtObj.id).val(txtObj.color);
+
+    $('#textBoxDivDraggable' + txtObj.id).css({ top: txtObj.top, left: txtObj.left });    
+
+    changeColorTask(txtObj.id, false);
+
+    $('#colortxtBo' + txtObj.id).trigger('change'); //invocar el change al inicio
+    lstTxtBox.push(txtObj);
+
+
+
+}
+
+
+function editTxtBox(idTxt, newPositionTxt = null) {
+    var txtEditObj = $.grep(lstTxtBox, function (txtBox) { //revisa si existe el objeto, retorna el objeto [0], que solo deberia encontrar uno con esa id, y retorna ese objeto
+        return txtBox.id == idTxt
+    })[0];
+
+    if (txtEditObj) { //se eedita el objeto en la lista
+
+        var positionTask = $("#textBoxDivDraggable" + idTxt).position();
+        if (newPositionTxt != null) {
+            positionTask.top = newPositionTxt.top;
+            positionTask.left = newPositionTxt.left;
+        }
+
+        txtEditObj.id = idTxt;        
+        txtEditObj.description = $("#textBoxDraggable" + idTxt).text();
+        txtEditObj.top = positionTask.top;
+        txtEditObj.left = positionTask.left;
+        txtEditObj.color = $('#colortxtBo' + idTxt).val();
+
+        saveTxtBox(txtEditObj);
+    }
+}
+
+function saveTxtBox(txtModel) {
+    ajaxTask('/Home/SaveTxtBox', 'POST', txtModel, successSaveTxt);
+}
+
+function successSaveTxt() {}
+
+$(document).on("click", "#addTextBox", function () {
+    var idRandom = createIdRandom();
+    var textBoxElement = textBox.replace(/xId/g, idRandom);
+
+
+
+    $("#allTasks").append(textBoxElement);
+
+    var idTaskDraggable = $("#textBoxDivDraggable" + idRandom).attr("id");
+    $("#" + idTaskDraggable).draggable({ //Contenedor donde se arrastra
+        containment: "#allTasks",
+        //cursor: 'move',
+        cursor: 'grab',
+        scroll: true,
+        scrollSensitivity: 50,
+        scrollSpeed: 50,
+        stop: function (event, ui) {
+            var position = ui.position;
+            editTxtBox(idRandom, position);
+        }
+    });
+
+    changeColorTask(idRandom, false);
+    addTxtBoxToList(idRandom);
+});
+
+function addTxtBoxToList(idTxtBox) {
+
+    var positionTask = $("#textBoxDivDraggable" + idTxtBox).position();
+
+    var obj = {
+        id: idTxtBox,
+        description: $("#textBoxDraggable" + idTxtBox).text(),        
+        top: positionTask.top,
+        left: positionTask.left,
+        color: $('#colortxtBo' + idTxtBox).val()
+    };
+
+    saveTxtBox(obj);
+    lstTxtBox.push(obj);
+
+
+}
+
+$(document).on("click", ".deleteTxtBoxCls", function (event) {
+    var idTxtBoxDelete = $(this).attr("id");
+    var justId = idTxtBoxDelete.replace("deleteTxtBo", "");
+
+    $('#textBoxDivDraggable' + justId).remove();
+    deleteTxtBox(justId);
+
+});
+
+function deleteTxtBox(idTxtBox) {
+    ajaxTask('/Home/DeleteTxtBox?idTxtBox=' + idTxtBox, 'DELETE', deleteTxtBoxSuccess);
+}
+
+function deleteTxtBoxSuccess(data) {
+
+}
+
+$(document).on("click", '.textBoxDraggableItem', function (event) { //al precionar dentro del label
+
+
+    var idTaskLblPressed = event.target.id;
+    var justId = idTaskLblPressed.replace("textBoxDraggable", "");
+    
+    $('#' + idTaskLblPressed).prop('contenteditable', true).focus(); //focus hace que apenas le de click, se pueda escribir
+    $('#btnBarBoxTxt' + justId).css('visibility', 'visible');    
+    $('#textBoxDivDraggableItem' + justId).draggable('disable');     
+
+});
+
+$(document).on("dblclick", '.textBoxDraggableItem', function (event) { //al precionar fuera del label
+
+    var idTaskLblPressed = event.target.id;
+    var justId = idTaskLblPressed.replace("textBoxDraggable", "");
+
+    $('#textBoxDivDraggableItem' + justId).draggable('enable');
+    $('#textBoxDraggable' + justId).css("border-color", "transparent");
+    $('#' + idTaskLblPressed).prop('contenteditable', false);
+
+    if (!$(event.target).closest('#textBoxDivDraggableItem').length) { //detectar doble click para ocultar botones 
+        $('#btnBarBoxTxt' + justId).css('visibility', 'hidden');        
+    }
+
+    editTxtBox(justId);
+
+    
+});
+
+$(document).on("blur", '.textBoxDraggableItem', function (event) { //al precionar fuera del label
+
+    var idTaskLblPressed = event.target.id;
+    var justId = idTaskLblPressed.replace("textBoxDraggable", "");
+
+    $('#textBoxDivDraggableItem' + justId).draggable('enable');
+    $('#textBoxDraggable' + justId).css("border-color", "transparent");
+    $('#' + idTaskLblPressed).prop('contenteditable', false);
+    editTxtBox(justId);
+
+
+});
+
 
 /* Cambiar modo día y noche */
 $(document).on("click", "#changeMode", function () {

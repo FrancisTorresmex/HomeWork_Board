@@ -10,5 +10,6 @@ namespace HomeWork_Board.Database
         }
 
         public DbSet<TaskModel> Task { get; set; }
+        public DbSet<TextBoxModel> TextBox { get; set; }
     }
 }

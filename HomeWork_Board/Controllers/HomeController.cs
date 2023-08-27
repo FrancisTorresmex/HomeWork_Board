@@ -30,12 +30,12 @@ namespace HomeWork_Board.Controllers
         {
             return View();
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetTask()
         {
             var lst = new List<Task>();
-           var lstTask =  await _context.Task.ToListAsync();
+            var lstTask =  await _context.Task.ToListAsync();            
             if (lstTask.Any())
             {
                 return Json(lstTask);
@@ -47,11 +47,28 @@ namespace HomeWork_Board.Controllers
             
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTxtBox()
+        {
+            var lst = new List<TextBoxModel>();
+            var lstTxtBox = await _context.TextBox.ToListAsync();
+
+            if (lstTxtBox.Any())
+                return Json(lstTxtBox);
+            else { return Json(lst); }
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveTask(TaskModel task)
         {
             try
             {
+                if (string.IsNullOrEmpty(task.Description))
+                    task.Description = "Default description";
+
+                if (string.IsNullOrEmpty(task.Title))
+                    task.Title = "Default title";
+
                 var taskEdit = await _context.Task.FirstOrDefaultAsync(x => x.Id == task.Id);
                 if (taskEdit != null)
                 {
@@ -78,6 +95,39 @@ namespace HomeWork_Board.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveTxtBox(TextBoxModel txtBox)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(txtBox.Description))
+                    txtBox.Description = "Default description";
+
+                var txtBoxEdit = await _context.TextBox.FirstOrDefaultAsync(x => x.Id == txtBox.Id);
+                if (txtBoxEdit != null)
+                {                    
+                    txtBoxEdit.Description = txtBox.Description;
+                    txtBoxEdit.Top = txtBox.Top;
+                    txtBoxEdit.Left = txtBox.Left;
+                    txtBoxEdit.Color = txtBox.Color;
+
+                    _context.Update(txtBoxEdit);
+                }
+                else
+                {
+                    await _context.AddAsync(txtBox);
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return Ok();
+        }
+
         [HttpDelete]
         public async Task<IActionResult> DeleteTask(string idTask)
         {
@@ -87,6 +137,25 @@ namespace HomeWork_Board.Controllers
                 if (taskElement != null)
                 {
                     _context.Remove(taskElement);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTxtBox(string idTxtBox)
+        {
+            try
+            {
+                var txtBoxElement = _context.TextBox.FirstOrDefault(x => x.Id == idTxtBox);
+                if (txtBoxElement != null)
+                {
+                    _context.Remove(txtBoxElement);
                     await _context.SaveChangesAsync();
                 }
             }

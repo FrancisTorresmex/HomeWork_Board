@@ -81,7 +81,31 @@
 .colorTask::-webkit-color-swatch {
     border: none;
     padding-bottom: 20px;
+    border-radius: 50%;    
+}
+
+
+/* Cajas de texto */
+.textBoxDraggableItem {
+    font-size: 2rem;    
+}
+
+.textBoxDivDraggableItem {
+    background-color: transparent;
+    border: none;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.btnBarTxtBox {
+    display: flex;
+    justify-content: space-evenly;    
+}
+
+.deleteTxtBoxCls {
+    border: none;
     border-radius: 50%;
+    background-color: whitesmoke;
 }
 
 /* Scroll estilo */
