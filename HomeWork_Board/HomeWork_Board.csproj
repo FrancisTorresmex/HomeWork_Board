@@ -4,9 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>2b7657e0-758e-4324-82a4-93bc0d3ea5d4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Images\HomeWork.png" />
     <None Include="wwwroot\js\Home.js" />
   </ItemGroup>
 
@@ -19,10 +21,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+	<!--Esto evita que la bd sqlite en el proyecto se remplaze al publicar nueva versión, si quieres que se cambie cada que actualizas-->
+	<!--usa PreserveNewest en lugar de Never-->
+	<ItemGroup>
+    <None Update="HomeWorkBoard.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

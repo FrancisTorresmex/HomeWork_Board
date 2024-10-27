@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/HomeWork_Board/Properties/serviceDependencies.local.json
+/HomeWork_Board/Properties/serviceDependencies.json
+/HomeWork_Board/Properties/serviceDependencies.HomeWorkBoard - Web Deploy.json
+/HomeWork_Board/Properties/ServiceDependencies/HomeWorkBoard - Web Deploy/profile.arm.json

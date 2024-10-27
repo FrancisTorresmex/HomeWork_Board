@@ -1,3 +1,5 @@
+
+
 var lstTask = [];
 var lstTaskInitial = [];
 var lstTxtBox = [];
@@ -10,6 +12,7 @@ $(document).ready(function () {
     ajaxTask('/Home/GetTask', 'GET', null, successGetTasks);
     ajaxTask('/Home/GetTxtBox', 'GET', null, successGetTextBox);
 });
+
 
 function successGetTasks(data) { //Cargar tareas guardadas
     $.each(data, function (idx, tsk) {
@@ -51,7 +54,7 @@ var taskDiv =
 $(document).on("click", "#addTask", function () {
     var idRandom = createIdRandom();
     var taskElement = taskDiv.replace(/xId/g, idRandom);
-
+    var position = $(this).position;
     
     
     $("#allTasks").append(taskElement);
@@ -65,7 +68,7 @@ $(document).on("click", "#addTask", function () {
         scrollSensitivity: 100,
         scrollSpeed: 100,
         stop: function (event, ui) {
-            var position = ui.position;
+            var position = ui.position
             editTask(idRandom, position);
         }
     });
@@ -78,7 +81,15 @@ $(document).on("click", "#addTask", function () {
 
     changeColorTask(idRandom, true);
     addTaskToList(idRandom);
+    
+});
 
+$(window).resize(function () {
+    //$(".cardDraggableItem").each(function () {
+    //    var id = $(this).attr("id").replace("Itemdraggable", "");
+    //    var position = $(this).offset();
+    //    editTask(id, position);
+    //});
 });
 
 function chargeCreateTaskInitial(taskObj) { 
@@ -93,21 +104,21 @@ function chargeCreateTaskInitial(taskObj) {
         //cursor: 'move',
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 100,
-        scrollSpeed: 100,
+        scrollSensitivity: 30,
+        scrollSpeed: 20,
         stop: function (event, ui) {
-            var position = ui.position;
+            var position = ui.position;            
             editTask(taskObj.id, position);
         }
     }).on('touchstart', function () { //mover en celuar (touchstart)
         $(this).draggable();
     });
-
+    
     $("#lblTitle" + taskObj.id).text(taskObj.title);
     $("#lblDesc" + taskObj.id).text(taskObj.description);
-    $('#colorTask' + taskObj.id).val(taskObj.color);
+    $('#colorTask' + taskObj.id).val(taskObj.color);    
 
-    $('#Itemdraggable' + taskObj.id).css({ top: taskObj.top, left: taskObj.left });
+    $('#Itemdraggable' + taskObj.id).css({ top: taskObj.top + 'px', left: taskObj.left + 'px' });
     $('#Itemdraggable' + taskObj.id).css("border-color", "darkgray");
     $('#Itemdraggable' + taskObj.id).css("border-width", "4px");
     $('#Itemdraggable' + taskObj.id).css("border-style", "solid");
@@ -129,6 +140,8 @@ function chargeCreateTaskInitial(taskObj) {
 
 function addTaskToList(idTask) {
 
+    //var positionTask = $("#Itemdraggable" + idTask).offset();
+    //var positionTask = $("#Itemdraggable" + idTask).position;
     var positionTask = $("#Itemdraggable" + idTask).position();
 
     var obj = {
@@ -153,17 +166,17 @@ function editTask(idTask, newPositionTsk = null) {
 
     if (taskEditObj) { //se eedita el objeto en la lista
 
-        var positionTask = $("#Itemdraggable" + idTask).position();
+        var positionTask = $("#Itemdraggable" + idTask).offset();
         if (newPositionTsk != null) {
             positionTask.top = newPositionTsk.top;
             positionTask.left = newPositionTsk.left;
+            taskEditObj.top = positionTask.top;
+            taskEditObj.left = positionTask.left;
         }
 
         taskEditObj.id = idTask;
         taskEditObj.title = $("#lblTitle" + idTask).text();
-        taskEditObj.description = $("#lblDesc" + idTask).text();
-        taskEditObj.top = positionTask.top;
-        taskEditObj.left = positionTask.left;
+        taskEditObj.description = $("#lblDesc" + idTask).text();        
         taskEditObj.color = $('#colorTask' + idTask).val();
 
         saveTask(taskEditObj);
@@ -326,7 +339,7 @@ function ajaxTask(url, type, data, funSucess) {
 
 var textBox =
 
-    '<div id="textBoxDivDraggablexId" class="ui-widget-content textBoxDivDraggableItem" draggable="true"  style="display: inline-block;">' +
+    '<div id="textBoxDivDraggablexId" class="card ui-widget-content textBoxDivDraggableItem" draggable="true"  style="display: inline-block;">' +
 
     '<div class="col-md-12 btnBarTxtBox" id="btnBarBoxTxtxId" style="visibility:hidden">' +
     '<button class="deleteTxtBoxCls" id="deleteTxtBoxId">X</button>' +
@@ -348,8 +361,8 @@ function chargeCreateTextBoxInitial(txtObj) {
         containment: "#allTasks",
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 50,
-        scrollSpeed: 50,
+        scrollSensitivity: 30,
+        scrollSpeed: 20,
         //start: function (event, ui) {
         //    $(this).css('cursor', 'grab'); //al arrastrarlo ya saldra el cursor de mano
         //},
@@ -364,7 +377,7 @@ function chargeCreateTextBoxInitial(txtObj) {
     $("#textBoxDraggable" + txtObj.id).text(txtObj.description);    
     $('#colortxtBo' + txtObj.id).val(txtObj.color);
 
-    $('#textBoxDivDraggable' + txtObj.id).css({ top: txtObj.top, left: txtObj.left });    
+    $('#textBoxDivDraggable' + txtObj.id).css({ top: txtObj.top + 'px', left: txtObj.left + 'px'});    
 
     changeColorTask(txtObj.id, false);
 
@@ -383,16 +396,16 @@ function editTxtBox(idTxt, newPositionTxt = null) {
 
     if (txtEditObj) { //se eedita el objeto en la lista
 
-        var positionTask = $("#textBoxDivDraggable" + idTxt).position();
+        var positionTask = $("#textBoxDivDraggable" + idTxt).offset();
         if (newPositionTxt != null) {
             positionTask.top = newPositionTxt.top;
             positionTask.left = newPositionTxt.left;
+            txtEditObj.top = positionTask.top;
+            txtEditObj.left = positionTask.left;
         }
 
         txtEditObj.id = idTxt;        
         txtEditObj.description = $("#textBoxDraggable" + idTxt).text();
-        txtEditObj.top = positionTask.top;
-        txtEditObj.left = positionTask.left;
         txtEditObj.color = $('#colortxtBo' + idTxt).val();
 
         saveTxtBox(txtEditObj);
@@ -422,7 +435,8 @@ $(document).on("click", "#addTextBox", function () {
         scrollSensitivity: 50,
         scrollSpeed: 50,
         stop: function (event, ui) {
-            var position = ui.position;
+            //var position = $(this).position();
+            var position = ui.position
             editTxtBox(idRandom, position);
         }
     });
@@ -433,13 +447,14 @@ $(document).on("click", "#addTextBox", function () {
 
 function addTxtBoxToList(idTxtBox) {
 
-    var positionTask = $("#textBoxDivDraggable" + idTxtBox).position();
+    //var positionBox = $("#textBoxDivDraggable" + idTxtBox).offset();
+    var positionBox = $("#textBoxDivDraggable" + idTxtBox).position();
 
     var obj = {
         id: idTxtBox,
         description: $("#textBoxDraggable" + idTxtBox).text(),        
-        top: positionTask.top,
-        left: positionTask.left,
+        top: positionBox.top,
+        left: positionBox.left,
         color: $('#colortxtBo' + idTxtBox).val()
     };
 
