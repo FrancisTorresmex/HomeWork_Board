@@ -1,4 +1,4 @@
-
+﻿
 
 var lstTask = [];
 var lstTaskInitial = [];
@@ -18,7 +18,8 @@ function successGetTasks(data) { //Cargar tareas guardadas
     $.each(data, function (idx, tsk) {
         chargeCreateTaskInitial(tsk);
     });
-    
+
+    showAlert('Hi again 🌻', 'success')
     
 }
 
@@ -65,8 +66,8 @@ $(document).on("click", "#addTask", function () {
         //cursor: 'move',
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 100,
-        scrollSpeed: 100,
+        scrollSensitivity: 5,
+        scrollSpeed: 5,
         stop: function (event, ui) {
             var position = ui.position
             editTask(idRandom, position);
@@ -104,8 +105,8 @@ function chargeCreateTaskInitial(taskObj) {
         //cursor: 'move',
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 30,
-        scrollSpeed: 20,
+        scrollSensitivity: 5,
+        scrollSpeed: 5,
         stop: function (event, ui) {
             var position = ui.position;            
             editTask(taskObj.id, position);
@@ -114,8 +115,8 @@ function chargeCreateTaskInitial(taskObj) {
         $(this).draggable();
     });
     
-    $("#lblTitle" + taskObj.id).text(taskObj.title);
-    $("#lblDesc" + taskObj.id).text(taskObj.description);
+    $("#lblTitle" + taskObj.id).html(taskObj.title);
+    $("#lblDesc" + taskObj.id).html(taskObj.description);
     $('#colorTask' + taskObj.id).val(taskObj.color);    
 
     $('#Itemdraggable' + taskObj.id).css({ top: taskObj.top + 'px', left: taskObj.left + 'px' });
@@ -140,17 +141,30 @@ function chargeCreateTaskInitial(taskObj) {
 
 function addTaskToList(idTask) {
 
-    //var positionTask = $("#Itemdraggable" + idTask).offset();
-    //var positionTask = $("#Itemdraggable" + idTask).position;
-    var positionTask = $("#Itemdraggable" + idTask).position();
+    var positionTask = $("#Itemdraggable" + idTask).offset();
+    //var positionTask = $("#Itemdraggable" + idTask).position();
+
+    // Pocision en base al scroll ya que el contenedor alltask es relativo, entonces basamos la pocision en el scroll para colocar la tarjeta nueva
+    var scrollTop = $("#allTasks").scrollTop();
+    var scrollLeft = $("#allTasks").scrollLeft();    
+    $('#Itemdraggable' + idTask).css({ top: scrollTop + 'px', left: scrollLeft + 'px' });
+
+
+    //Agrega color al crearse defecto al inicio en la tarjeta
+    var colorTask = $('#colorTask' + idTask).val();
+    $('#Itemdraggable' + idTask).css("background-color", '#EEFFB3');
+    $('#lblTitle' + idTask).css('color', 'black');
+    $('#lblDesc' + idTask).css('color', 'black');
+    $('#colorTask' + idTask).val('#EEFFB3');
+
 
     var obj = {
         id: idTask,
-        title: $("#lblTitle" + idTask).text(),
-        description: $("#lblDesc" + idTask).text(),
-        top: positionTask.top,
-        left: positionTask.left,
-        color: $('#colorTask' + idTask).val()
+        title: $("#lblTitle" + idTask).html(),
+        description: $("#lblDesc" + idTask).html(),
+        top: scrollTop,
+        left: scrollLeft,
+        color: colorTask
     };
 
     saveTask(obj);
@@ -175,8 +189,8 @@ function editTask(idTask, newPositionTsk = null) {
         }
 
         taskEditObj.id = idTask;
-        taskEditObj.title = $("#lblTitle" + idTask).text();
-        taskEditObj.description = $("#lblDesc" + idTask).text();        
+        taskEditObj.title = $("#lblTitle" + idTask).html();
+        taskEditObj.description = $("#lblDesc" + idTask).html();        
         taskEditObj.color = $('#colorTask' + idTask).val();
 
         saveTask(taskEditObj);
@@ -191,12 +205,14 @@ function createIdRandom() {
 
 /* Eliminar tarea */
 function deleteTask(idTask) {    
-    ajaxTask('/Home/DeleteTask?idTask=' + idTask, 'DELETE', deleteTaskSuccess);
+    ajaxTask('/Home/DeleteTask?idTask=' + idTask, 'DELETE', deleteeTaskSuccess);
 }
 
-function deleteTaskSuccess(data) {
-
+function deleteeTaskSuccess(data) {
+    showAlert('Saved changes 🐙', 'success');
 }
+
+
 
 /* Cambiar color task */
 function changeColorTask(idTask, isTask = true) {
@@ -206,7 +222,7 @@ function changeColorTask(idTask, isTask = true) {
             var selectedColor = $(this).val();
             colorTask(idTask, selectedColor, true);
 
-            //Cambiar color de texto seg�n si es oscuro el background
+            //Cambiar color de texto según si es oscuro el background
             var rgb = getRgbColor(selectedColor);
             var luminosidad = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
             if (luminosidad < 0.5) {
@@ -253,7 +269,7 @@ function getRgbColor(color) {
     return { r: r, g: g, b: b };
 }
 
-/* Editar label del titulo y descripci�n */
+/* Editar label del titulo y descripción */
 
 $(document).on("click", '.titleLabel', function (event) { //al precionar dentro del label
 
@@ -321,6 +337,7 @@ function saveTask(taskModel) {
 }
 
 function successSaveTask(data) {
+    showAlert('Saved changes 🐙', 'success');
 }
 
 function ajaxTask(url, type, data, funSucess) {
@@ -330,7 +347,7 @@ function ajaxTask(url, type, data, funSucess) {
         data: data,
         success: funSucess,
         error: function (xhr, status, error) {
-            alert(error);
+            showAlert('Oops, an error occurred. Please try again 🔌', 'error');
         }
     });
 }
@@ -361,8 +378,8 @@ function chargeCreateTextBoxInitial(txtObj) {
         containment: "#allTasks",
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 30,
-        scrollSpeed: 20,
+        scrollSensitivity: 5,
+        scrollSpeed: 5,
         //start: function (event, ui) {
         //    $(this).css('cursor', 'grab'); //al arrastrarlo ya saldra el cursor de mano
         //},
@@ -374,7 +391,7 @@ function chargeCreateTextBoxInitial(txtObj) {
         $(this).draggable();
     });
 
-    $("#textBoxDraggable" + txtObj.id).text(txtObj.description);    
+    $("#textBoxDraggable" + txtObj.id).html(txtObj.description);    
     $('#colortxtBo' + txtObj.id).val(txtObj.color);
 
     $('#textBoxDivDraggable' + txtObj.id).css({ top: txtObj.top + 'px', left: txtObj.left + 'px'});    
@@ -405,7 +422,7 @@ function editTxtBox(idTxt, newPositionTxt = null) {
         }
 
         txtEditObj.id = idTxt;        
-        txtEditObj.description = $("#textBoxDraggable" + idTxt).text();
+        txtEditObj.description = $("#textBoxDraggable" + idTxt).html();
         txtEditObj.color = $('#colortxtBo' + idTxt).val();
 
         saveTxtBox(txtEditObj);
@@ -416,7 +433,9 @@ function saveTxtBox(txtModel) {
     ajaxTask('/Home/SaveTxtBox', 'POST', txtModel, successSaveTxt);
 }
 
-function successSaveTxt() {}
+function successSaveTxt() {
+    showAlert('Saved changes 🐙', 'success');
+}
 
 $(document).on("click", "#addTextBox", function () {
     var idRandom = createIdRandom();
@@ -432,8 +451,8 @@ $(document).on("click", "#addTextBox", function () {
         //cursor: 'move',
         cursor: 'grab',
         scroll: true,
-        scrollSensitivity: 50,
-        scrollSpeed: 50,
+        scrollSensitivity: 5,
+        scrollSpeed: 5,
         stop: function (event, ui) {
             //var position = $(this).position();
             var position = ui.position
@@ -447,15 +466,27 @@ $(document).on("click", "#addTextBox", function () {
 
 function addTxtBoxToList(idTxtBox) {
 
-    //var positionBox = $("#textBoxDivDraggable" + idTxtBox).offset();
-    var positionBox = $("#textBoxDivDraggable" + idTxtBox).position();
+    var positionBox = $("#textBoxDivDraggable" + idTxtBox).offset();
+    //var positionBox = $("#textBoxDivDraggable" + idTxtBox).position();
+
+    // Pocision en base al scroll ya que el contenedor alltask es relativo, entonces basamos la pocision en el scroll para colocar la nueva caja
+    var scrollTop = $("#allTasks").scrollTop();
+    var scrollLeft = $("#allTasks").scrollLeft() + $("#addTextBox").offset().left; //se le suma la pocision left (eje x) de addTextBox para que aparezca debajo del boton de agregar caja
+    $('#textBoxDivDraggable' + idTxtBox).css({ top: scrollTop + 'px', left: scrollLeft + 'px' });
+
+
+    //Agrega color al crearse defecto al inicio en la tarjeta
+    $('#colortxtBo' + idTxtBox).val('#D57A53');
+    $('#textBoxDivDraggable' + idTxtBox).css("color", '#D57A53');
+    var colorBox = $('#colortxtBo' + idTxtBox).val()
+
 
     var obj = {
         id: idTxtBox,
-        description: $("#textBoxDraggable" + idTxtBox).text(),        
-        top: positionBox.top,
-        left: positionBox.left,
-        color: $('#colortxtBo' + idTxtBox).val()
+        description: $("#textBoxDivDraggable" + idTxtBox).html(),
+        top: scrollTop,
+        left: scrollLeft,
+        color: colorBox
     };
 
     saveTxtBox(obj);
@@ -478,7 +509,7 @@ function deleteTxtBox(idTxtBox) {
 }
 
 function deleteTxtBoxSuccess(data) {
-
+    showAlert('Saved changes 🐙', 'success');
 }
 
 $(document).on("click", '.textBoxDraggableItem', function (event) { //al precionar dentro del label
@@ -525,7 +556,7 @@ $(document).on("blur", '.textBoxDraggableItem', function (event) { //al preciona
 });
 
 
-/* Cambiar modo d�a y noche */
+/* Cambiar modo día y noche */
 $(document).on("click", "#changeMode", function () {
 
     //js
@@ -565,4 +596,19 @@ $(document).on("click", "#changeMode", function () {
         
     }
 });
+
+function showAlert(message, type = "success") {
+    var alert = $("#alertDiv");
+    alert.removeClass("error"); // Eliminar clase de error si existe
+    alert.addClass(type); // Agregar clase de tipo (success o error)
+    alert.text(message); // Establecer el mensaje
+
+    alert.fadeIn(); // Mostrar la alerta
+
+    // Ocultar la alerta después de 3 segundos (3000 milisegundos)
+    setTimeout(function () {
+        alert.fadeOut(); // Desaparece con un efecto
+    }, 4000);
+}
+
 

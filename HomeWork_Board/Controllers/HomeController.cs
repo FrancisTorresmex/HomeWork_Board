@@ -138,7 +138,9 @@ namespace HomeWork_Board.Controllers
                 {
                     _context.Remove(taskElement);
                     await _context.SaveChangesAsync();
+
                 }
+                
             }
             catch (Exception ex)
             {

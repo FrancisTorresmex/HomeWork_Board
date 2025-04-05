@@ -45,7 +45,9 @@ header {
 
 .footer {
     /*position:static;*/
-    min-height:40px;
+    min-height: 40px;
+    display: flex;
+    text-align: center;
 }
 
 #iconNavBar {

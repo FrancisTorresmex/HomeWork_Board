@@ -134,3 +134,20 @@
     background-color: #6C696C;
     scrollbar-color: #000 #fff;
 }
+
+#alertDiv {
+    min-width: 100%;
+    min-height: 40px;
+    display: flex;
+    z-index: 9999;
+    position: absolute;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #a8fdab;
+    justify-content: center;
+}
+
+    #alertDiv.error {
+        background-color: #f78989; /* rojo para error */
+    }
