@@ -151,3 +151,9 @@
     #alertDiv.error {
         background-color: #f78989; /* rojo para error */
     }
+
+.emojiInput {
+    text-align: center;
+    background-color: #EEFFB3;
+    border: none;
+}

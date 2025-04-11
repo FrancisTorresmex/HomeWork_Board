@@ -4,6 +4,8 @@ var lstTask = [];
 var lstTaskInitial = [];
 var lstTxtBox = [];
 var isModeDay = true;
+let justClickedEmojiButton = false; 
+let openDialogEmoji = false;
 
 $(document).ready(function () {
     //$("#ItemdraggablexId").draggable({
@@ -42,10 +44,18 @@ var taskDiv =
 
     '<div>' +
     '<div id="lblTitlexId" class="titleLabel text-center" contenteditable="false">New Title</div>' +
+    '<div id="btnBarEmojiTxId" style="visibility:hidden">' +
+    '<button  type="button" class="emojiInput" id="emojiInputTxId">😄</button>' +
+    '<emoji-picker style="display: none;" id="emojiPickerTxId"></emoji-picker>' +
     '</div>' +
-
+    '</div>' +
+    
     '<div>' +
     '<div id="lblDescxId" class="descLabel text-center" contenteditable="false">New Description</div>' +
+    '<div id="btnBarEmojiDxId" style="visibility:hidden">' +
+    '<button  type="button" class="emojiInput" id="emojiInputDxId">😄</button>' +
+    '<emoji-picker style="display: none;" id="emojiPickerDxId"></emoji-picker>' +
+    '</div>' +
     '</div>' +
 
     '</div >' +
@@ -80,6 +90,7 @@ $(document).on("click", "#addTask", function () {
     //    of: "#allTasks"
     //});
 
+    
     changeColorTask(idRandom, true);
     addTaskToList(idRandom);
     
@@ -124,13 +135,10 @@ function chargeCreateTaskInitial(taskObj) {
     $('#Itemdraggable' + taskObj.id).css("border-width", "4px");
     $('#Itemdraggable' + taskObj.id).css("border-style", "solid");
 
-    //$("#" + idTaskDraggable).position({
-    //    my: taskObj.top.toString(),
-    //    at: taskObj.left.toString(),
-    //    of: "#allTasks"
-    //});
-
     changeColorTask(taskObj.id, true);
+
+    btnEmojiTaskAddEventListenerClick('desc', taskObj.id);
+    btnEmojiTaskAddEventListenerClick('title', taskObj.id);
 
     $('#colorTask' + taskObj.id).trigger('change'); //invocar el change al inicio
     lstTask.push(taskObj);
@@ -157,7 +165,6 @@ function addTaskToList(idTask) {
     $('#lblDesc' + idTask).css('color', 'black');
     $('#colorTask' + idTask).val('#EEFFB3');
 
-
     var obj = {
         id: idTask,
         title: $("#lblTitle" + idTask).html(),
@@ -166,6 +173,9 @@ function addTaskToList(idTask) {
         left: scrollLeft,
         color: colorTask
     };
+
+    btnEmojiTaskAddEventListenerClick('title', idTask);
+    btnEmojiTaskAddEventListenerClick('desc', idTask);
 
     saveTask(obj);
     lstTask.push(obj);
@@ -192,6 +202,9 @@ function editTask(idTask, newPositionTsk = null) {
         taskEditObj.title = $("#lblTitle" + idTask).html();
         taskEditObj.description = $("#lblDesc" + idTask).html();        
         taskEditObj.color = $('#colorTask' + idTask).val();
+
+        justClickedEmojiButton = false;
+        openDialogEmoji = false;
 
         saveTask(taskEditObj);
     }
@@ -269,55 +282,94 @@ function getRgbColor(color) {
     return { r: r, g: g, b: b };
 }
 
-/* Editar label del titulo y descripción */
+/* Editar label del titulo */
 
 $(document).on("click", '.titleLabel', function (event) { //al precionar dentro del label
 
     var idTaskLblPressed = event.target.id;
     var justId = idTaskLblPressed.replace("lblTitle", "");
 
+    // Activar edición
+    $('#' + idTaskLblPressed).prop('contenteditable', true).focus();
     $('#Itemdraggable' + justId).draggable('disable');
     $('#Itemdraggable' + justId).css("border-color", "orange");
     $('#Itemdraggable' + justId).css("border-width", "4px");
     $('#Itemdraggable' + justId).css("border-style", "solid");
-    $('#' + idTaskLblPressed).prop('contenteditable', true).focus();
+    $('#btnBarEmojiT' + justId).css('visibility', 'visible');    
+
+
+    // Escuchador temporal para detectar click fuera
+    $(document).on("click.outsideEdit_" + justId, function (e) {
+
+
+        //evitar que se cierren los botones al cambiar de color por ejemplo
+        if (!$(e.target).closest('#lblTitle' + justId).length &&
+            !$(e.target).closest('#btnBarEmojiT' + justId).length) {
+
+            // Click fuera: desactivar edición
+            $('#' + idTaskLblPressed).prop("contenteditable", false);
+            $('#btnBarEmojiT' + justId).css('visibility', 'hidden');            
+            $('#Itemdraggable' + justId).draggable('enable');
+            $('#' + idTaskLblPressed).css("border-color", "transparent");
+
+            //solo aplica cerrar el menu de emojis si se preciono el boton de emojis
+            if (justClickedEmojiButton && openDialogEmoji) {
+                $('#emojiPickerT' + justId).hide();
+            }
+           
+
+            editTask(justId);
+
+            // Quitar este manejador para que no se quede activo
+            $(document).off("click.outsideEdit_" + justId);
+        }
+    });
+
 });
 
-$(document).on("blur", '.titleLabel', function (event) { //al precionar fuera del label
-
-    var idTaskLblPressed = event.target.id;
-    var justId = idTaskLblPressed.replace("lblTitle", "");
-
-    $('#Itemdraggable' + justId).draggable('enable');
-    $('#Itemdraggable' + justId).css("border-color", "darkgray");
-    $('#' + idTaskLblPressed).prop('contenteditable', false);
-
-    editTask(justId);
-});
 
 $(document).on("click", '.descLabel', function (event) { //al precionar dentro del label
 
     var idTaskLblPressed = event.target.id;
-    var justId = idTaskLblPressed.replace("lblDesc", "");
+    var justId = idTaskLblPressed.replace("lblDesc", "");    
 
+
+    // Activar edición
+    $('#' + idTaskLblPressed).prop('contenteditable', true).focus(); //con esto se hace focus al elemento y permite usar click.outsideEdit_ despues para detectar el pierde de foco
     $('#Itemdraggable' + justId).draggable('disable');
     $('#Itemdraggable' + justId).css("border-color", "orange");
     $('#Itemdraggable' + justId).css("border-width", "4px");
     $('#Itemdraggable' + justId).css("border-style", "solid");
-    $('#' + idTaskLblPressed).prop('contenteditable', true).focus();
+    $('#btnBarEmojiD' + justId).css('visibility', 'visible');
+
+    // Escuchador temporal para detectar click fuera
+    $(document).on("click.outsideEdit_" + justId, function (e) {
+
+        //evitar que se cierren los botones al cambiar de color por ejemplo
+        if (!$(e.target).closest('#lblDesc' + justId).length &&
+            !$(e.target).closest('#btnBarEmojiD' + justId).length) {
+
+            // Click fuera: desactivar edición
+            $('#' + idTaskLblPressed).prop("contenteditable", false);
+            $('#btnBarEmojiD' + justId).css('visibility', 'hidden');
+            $('#Itemdraggable' + justId).draggable('enable');
+            $('#' + idTaskLblPressed).css("border-color", "transparent");
+
+            //solo aplica cerrar el menu de emojis si se preciono el boton de emojis
+            if (justClickedEmojiButton && openDialogEmoji) {
+                $('#emojiPickerD' + justId).hide();
+            }       
+
+            editTask(justId);
+
+            // Quitar este manejador para que no se quede activo
+            $(document).off("click.outsideEdit_" + justId);
+        }
+    });
+
 });
 
-$(document).on("blur", '.descLabel', function (event) { //al precionar fuera del label
 
-    var idTaskLblPressed = event.target.id;
-    var justId = idTaskLblPressed.replace("lblDesc", "");
-
-    $('#Itemdraggable' + justId).draggable('enable');
-    $('#Itemdraggable' + justId).css("border-color", "darkgray");
-    $('#' + idTaskLblPressed).prop('contenteditable', false);
-
-    editTask(justId);
-});
 
 
 /* Eliminar tarea */
@@ -365,6 +417,11 @@ var textBox =
 
     '<div id="textBoxDraggablexId" class="textBoxDraggableItem text-center" contenteditable="false">New box text</div>' +
 
+    '<div id="btnBarEmojiTxtxId" style="visibility:hidden">' +
+    '<button  type="button" class="emojiInput" id="emojiInputTxtxId">😄</button>' +
+    '<emoji-picker style="display: none;" id="emojiPickerTxtxId"></emoji-picker>' +
+    '</div>' +
+
     '</div>';
     
 function chargeCreateTextBoxInitial(txtObj) {
@@ -399,9 +456,10 @@ function chargeCreateTextBoxInitial(txtObj) {
     changeColorTask(txtObj.id, false);
 
     $('#colortxtBo' + txtObj.id).trigger('change'); //invocar el change al inicio
+
+    btnEmojiTxtBoxAddEventListenerClick(txtObj.id);
+
     lstTxtBox.push(txtObj);
-
-
 
 }
 
@@ -425,7 +483,12 @@ function editTxtBox(idTxt, newPositionTxt = null) {
         txtEditObj.description = $("#textBoxDraggable" + idTxt).html();
         txtEditObj.color = $('#colortxtBo' + idTxt).val();
 
+        justClickedEmojiButton = false;
+        openDialogEmoji = false;   
+
         saveTxtBox(txtEditObj);
+
+        
     }
 }
 
@@ -460,11 +523,15 @@ $(document).on("click", "#addTextBox", function () {
         }
     });
 
+    btnEmojiTxtBoxAddEventListenerClick(idRandom);
+
     changeColorTask(idRandom, false);
     addTxtBoxToList(idRandom);
+
 });
 
 function addTxtBoxToList(idTxtBox) {
+
 
     var positionBox = $("#textBoxDivDraggable" + idTxtBox).offset();
     //var positionBox = $("#textBoxDivDraggable" + idTxtBox).position();
@@ -478,8 +545,7 @@ function addTxtBoxToList(idTxtBox) {
     //Agrega color al crearse defecto al inicio en la tarjeta
     $('#colortxtBo' + idTxtBox).val('#D57A53');
     $('#textBoxDivDraggable' + idTxtBox).css("color", '#D57A53');
-    var colorBox = $('#colortxtBo' + idTxtBox).val()
-
+    var colorBox = $('#colortxtBo' + idTxtBox).val();
 
     var obj = {
         id: idTxtBox,
@@ -517,43 +583,102 @@ $(document).on("click", '.textBoxDraggableItem', function (event) { //al precion
 
     var idTaskLblPressed = event.target.id;
     var justId = idTaskLblPressed.replace("textBoxDraggable", "");
+
+    // Activar edición
+    $(this).prop("contenteditable", true).focus(); //con esto se hace focus al elemento y permite usar click.outsideEdit_ despues para detectar el pierde de foco
+    $('#btnBarBoxTxt' + justId).css('visibility', 'visible');
+    $('#btnBarEmojiTxt' + justId).css('visibility', 'visible');
+    $('#textBoxDivDraggableItem' + justId).draggable('disable');
+
+    // Escuchador temporal para detectar click fuera
+    $(document).on("click.outsideEdit_" + justId, function (e) {
+
+        if (!$(e.target).closest('#textBoxDivDraggableItem' + justId).length &&
+            !$(e.target).closest('#btnBarBoxTxt' + justId).length && //evitar que se cierren los botones al cambiar de color por ejemplo
+            !$(e.target).closest('#btnBarEmojiTxt' + justId).length) {
+            // Click fuera: desactivar edición
+            $('#' + idTaskLblPressed).prop("contenteditable", false);
+            $('#btnBarBoxTxt' + justId).css('visibility', 'hidden');
+            $('#btnBarEmojiTxt' + justId).css('visibility', 'hidden');
+            $('#textBoxDivDraggableItem' + justId).draggable('enable');
+            $('#' + idTaskLblPressed).css("border-color", "transparent");
+
+            //solo aplica cerrar el menu de emojis si se preciono el boton de emojis
+            if (justClickedEmojiButton && openDialogEmoji) {
+                $('#emojiPickerTxt' + justId).hide();
+            }
+
+            editTxtBox(justId);
+
+            // Quitar este manejador para que no se quede activo
+            $(document).off("click.outsideEdit_" + justId);
+        }
+    });
     
-    $('#' + idTaskLblPressed).prop('contenteditable', true).focus(); //focus hace que apenas le de click, se pueda escribir
-    $('#btnBarBoxTxt' + justId).css('visibility', 'visible');    
-    $('#textBoxDivDraggableItem' + justId).draggable('disable');     
 
 });
 
-$(document).on("dblclick", '.textBoxDraggableItem', function (event) { //al precionar fuera del label
+$(document).on("click", ".emojiInput", function (event) {
+    
+    var idTxtBoxEmoji = $(this).attr("id");
+    var justId = idTxtBoxEmoji.replace("emojiInput", "");
+    /*$("#emojiPicker" + justId).toggle();*/
+    $("#emojiPicker" + justId).show();
 
-    var idTaskLblPressed = event.target.id;
-    var justId = idTaskLblPressed.replace("textBoxDraggable", "");
-
-    $('#textBoxDivDraggableItem' + justId).draggable('enable');
-    $('#textBoxDraggable' + justId).css("border-color", "transparent");
-    $('#' + idTaskLblPressed).prop('contenteditable', false);
-
-    if (!$(event.target).closest('#textBoxDivDraggableItem').length) { //detectar doble click para ocultar botones 
-        $('#btnBarBoxTxt' + justId).css('visibility', 'hidden');        
+    if (openDialogEmoji) {
+        $("#emojiPicker" + justId).hide();
     }
 
-    editTxtBox(justId);
+    justClickedEmojiButton = true;
+    openDialogEmoji = !openDialogEmoji;    
+
+});
+
+function btnEmojiTxtBoxAddEventListenerClick(justId) {
+
+    // Asociar el evento emoji-click al picker correspondiente
+    document.getElementById('emojiPickerTxt' + justId).addEventListener('emoji-click', event => {
+        const emoji = event.detail.unicode;        
+
+        $("#textBoxDraggable" + justId).html(function (_, currentText) {
+            return currentText + emoji;
+        });
+
+    });
+}
+
+function btnEmojiTaskAddEventListenerClick(type, justId) {
+    
+    switch (type) {
+        case 'title':
+            // Asociar el evento emoji-click al picker correspondiente
+            document.getElementById('emojiPickerT' + justId).addEventListener('emoji-click', event => {
+                const emoji = event.detail.unicode;                
+
+                $('#lblTitle' + justId).html(function (_, currentText) {
+                    return currentText + emoji;
+                });
+
+            });
+            break;
+
+        case 'desc':
+            // Asociar el evento emoji-click al picker correspondiente
+            document.getElementById('emojiPickerD' + justId).addEventListener('emoji-click', event => {
+                const emoji = event.detail.unicode;                
+
+                $('#lblDesc' + justId).html(function (_, currentText) {
+                    return currentText + emoji;
+                });
+
+            });
+            break;
+
+        default: showAlert("Oops, there's a problem, try again 🔌", 'error')
+    }
 
     
-});
-
-$(document).on("blur", '.textBoxDraggableItem', function (event) { //al precionar fuera del label
-
-    var idTaskLblPressed = event.target.id;
-    var justId = idTaskLblPressed.replace("textBoxDraggable", "");
-
-    $('#textBoxDivDraggableItem' + justId).draggable('enable');
-    $('#textBoxDraggable' + justId).css("border-color", "transparent");
-    $('#' + idTaskLblPressed).prop('contenteditable', false);
-    editTxtBox(justId);
-
-
-});
+}
 
 
 /* Cambiar modo día y noche */
@@ -566,10 +691,10 @@ $(document).on("click", "#changeMode", function () {
     //jquery
     if (isModeDay) {
         isModeDay = !isModeDay;
-        $("#bodyInitial").css("background-color", "black");
+        $("#bodyInitial").css("background-color", "currentcolor");
         $("#changeModeImg").attr("src", "Images/HomeWorkBoard_Night.png");
-        $(".footer").css("background-color", "#141314");
-        $(".navbar").css("background-color", "#141314");
+        $(".footer").css("background-color", "black");
+        $(".navbar").css("background-color", "currentcolor");
         $(".txtColorMode").css("color", "white");
         $("#allTasks::-webkit-scrollbar-track").css("background-color", "red");
 
@@ -610,5 +735,7 @@ function showAlert(message, type = "success") {
         alert.fadeOut(); // Desaparece con un efecto
     }, 4000);
 }
+
+
 
 
