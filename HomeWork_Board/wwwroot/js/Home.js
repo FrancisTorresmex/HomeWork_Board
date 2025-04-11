@@ -43,7 +43,7 @@ var taskDiv =
     '</div >' +
 
     '<div>' +
-    '<div id="lblTitlexId" class="titleLabel text-center" contenteditable="false">New Title</div>' +
+    '<textarea id="lblTitlexId" class="titleLabel text-center" placeholder="Title" contenteditable="false"></textarea>' +
     '<div id="btnBarEmojiTxId" style="visibility:hidden">' +
     '<button  type="button" class="emojiInput" id="emojiInputTxId">😄</button>' +
     '<emoji-picker style="display: none;" id="emojiPickerTxId"></emoji-picker>' +
@@ -51,7 +51,7 @@ var taskDiv =
     '</div>' +
     
     '<div>' +
-    '<div id="lblDescxId" class="descLabel text-center" contenteditable="false">New Description</div>' +
+    '<textarea id="lblDescxId" class="descLabel text-center" contenteditable="false">New Description</textarea>' +
     '<div id="btnBarEmojiDxId" style="visibility:hidden">' +
     '<button  type="button" class="emojiInput" id="emojiInputDxId">😄</button>' +
     '<emoji-picker style="display: none;" id="emojiPickerDxId"></emoji-picker>' +
@@ -126,7 +126,7 @@ function chargeCreateTaskInitial(taskObj) {
         $(this).draggable();
     });
     
-    $("#lblTitle" + taskObj.id).html(taskObj.title);
+    $("#lblTitle" + taskObj.id).val(taskObj.title);
     $("#lblDesc" + taskObj.id).html(taskObj.description);
     $('#colorTask' + taskObj.id).val(taskObj.color);    
 
@@ -167,7 +167,7 @@ function addTaskToList(idTask) {
 
     var obj = {
         id: idTask,
-        title: $("#lblTitle" + idTask).html(),
+        title: $("#lblTitle" + idTask).val(),
         description: $("#lblDesc" + idTask).html(),
         top: scrollTop,
         left: scrollLeft,
@@ -199,7 +199,7 @@ function editTask(idTask, newPositionTsk = null) {
         }
 
         taskEditObj.id = idTask;
-        taskEditObj.title = $("#lblTitle" + idTask).html();
+        taskEditObj.title = $("#lblTitle" + idTask).val();
         taskEditObj.description = $("#lblDesc" + idTask).html();        
         taskEditObj.color = $('#colorTask' + idTask).val();
 
@@ -655,7 +655,7 @@ function btnEmojiTaskAddEventListenerClick(type, justId) {
             document.getElementById('emojiPickerT' + justId).addEventListener('emoji-click', event => {
                 const emoji = event.detail.unicode;                
 
-                $('#lblTitle' + justId).html(function (_, currentText) {
+                $('#lblTitle' + justId).val(function (_, currentText) {
                     return currentText + emoji;
                 });
 

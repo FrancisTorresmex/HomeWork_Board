@@ -31,12 +31,21 @@
 }
 
 .descLabel {
+    width: 100%;
+    font-size: 13pt;
     white-space: break-spaces;
+    background-color: transparent;
+    border: none;
 }
 
 .titleLabel {
-    font-size: 15pt;
+    margin-top: 10px;
+    width: 100%;
+    font-weight: bold;
+    font-size: 13pt;
     white-space: break-spaces;
+    background-color: transparent;
+    border: none;
 }
 
 .deleteTaskCls {
@@ -92,7 +101,10 @@
 
 /* Cajas de texto */
 .textBoxDraggableItem {
-    font-size: 2rem;    
+    font-size: 2rem;
+    white-space: break-spaces;
+    background-color: transparent;
+    border: none;
 }
 
 .textBoxDivDraggableItem {    
@@ -156,4 +168,19 @@
     text-align: center;
     background-color: #EEFFB3;
     border: none;
+}
+
+
+textarea::-webkit-scrollbar {
+    width: 12px; /* ancho del scroll */
+}
+
+textarea::-webkit-scrollbar-track {
+    background-color: transparent; /* color del fondo del scroll */
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background-color: #aaa; /* color del "pulgón" */
+    border-radius: 10px;
+    border: 2px solid #eaffb5; /* bordes para integrarse mejor */
 }
