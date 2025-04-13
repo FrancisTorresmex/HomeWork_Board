@@ -32,3 +32,7 @@ PM> `Update-database`
 2> Agregar modelo en Models/
 
 3> Ejecutar Add-migration "nombre" y Update-database
+
+## Imagenes 👀
+
+<img src="HomeWork_Board/wwwroot/Images/Homeworkboard_Img.png" width="1000"/>
