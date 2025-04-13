@@ -1,16 +1,15 @@
-# HomeWork_Board
+# HomeWork Board
 Tablero de notas y texto. Creado con Jquery UI, Asp.Net MVC y Sqlite.
 
 ## Paquetes :cactus:
-> JQuery.UI.Combined 1.13.2.
 
-> Microsoft.EntityFrameworkCore 7.0.8.
+> Microsoft.EntityFrameworkCore 9.0.4
 
-> Microsoft.EntityFrameworkCore.Design 7.0.8.
+> Microsoft.EntityFrameworkCore.Design 9.0.4
 
-> Microsoft.EntityFrameworkCore.Sqlite 7.0.8
+> Microsoft.EntityFrameworkCore.Sqlite 9.0.4
 
-> Microsoft.EntityFrameworkCore.Tools 7.0.8
+> Microsoft.EntityFrameworkCore.Tools 9.0.4
 
 ## Notas: 🌎
 > Proyecto Asp .Net MVC, creado con Code First, actualmente cuenta con la tabla Task y TextBox.
@@ -32,3 +31,7 @@ PM> `Update-database`
 2> Agregar modelo en Models/
 
 3> Ejecutar Add-migration "nombre" y Update-database
+
+## Imagenes 👀
+
+<img src="HomeWork_Board/wwwroot/Images/Homeworkboard_Img.png" width="1000"/>

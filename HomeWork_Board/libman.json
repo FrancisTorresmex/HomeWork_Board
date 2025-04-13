@@ -3,8 +3,17 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "jqueryui@1.13.2",
-      "destination": "wwwroot/lib/jqueryui/"
+      "library": "jquery@3.7.1",
+      "destination": "wwwroot/lib/jquery/dist/"
+    },
+    {
+      "library": "jqueryui@1.14.1",
+      "destination": "wwwroot/lib/jqueryui/dist/"
+    },
+    {
+      "library": "bootstrap@5.3.3",
+      "destination": "wwwroot/lib/bootstrap/dist/"
     }
+
   ]
 }
