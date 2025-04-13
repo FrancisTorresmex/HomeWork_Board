@@ -11,12 +11,18 @@ $(document).ready(function () {
     //$("#ItemdraggablexId").draggable({
     //    containment: "#containerTasks"
     //});
+
+    //inicia mostrando load (se oculta hasta cargar los textbox)
+    showLoader(true);
+
     ajaxTask('/Home/GetTask', 'GET', null, successGetTasks);
     ajaxTask('/Home/GetTxtBox', 'GET', null, successGetTextBox);
+
 });
 
 
 function successGetTasks(data) { //Cargar tareas guardadas
+
     $.each(data, function (idx, tsk) {
         chargeCreateTaskInitial(tsk);
     });
@@ -29,6 +35,9 @@ function successGetTextBox(data) {
     $.each(data, function (idx, txtBox) {
         chargeCreateTextBoxInitial(txtBox);
     })
+
+    //Se oculta loader
+    showLoader(false);
 }
 
 /* Agregar tarea */
@@ -51,7 +60,7 @@ var taskDiv =
     '</div>' +
     
     '<div>' +
-    '<textarea id="lblDescxId" class="descLabel text-center" contenteditable="false">New Description</textarea>' +
+    '<textarea id="lblDescxId" class="descLabel text-center" contenteditable="false"></textarea>' +
     '<div id="btnBarEmojiDxId" style="visibility:hidden">' +
     '<button  type="button" class="emojiInput" id="emojiInputDxId">😄</button>' +
     '<emoji-picker style="display: none;" id="emojiPickerDxId"></emoji-picker>' +
@@ -143,8 +152,6 @@ function chargeCreateTaskInitial(taskObj) {
     $('#colorTask' + taskObj.id).trigger('change'); //invocar el change al inicio
     lstTask.push(taskObj);
 
-
-
 }
 
 function addTaskToList(idTask) {
@@ -200,7 +207,7 @@ function editTask(idTask, newPositionTsk = null) {
 
         taskEditObj.id = idTask;
         taskEditObj.title = $("#lblTitle" + idTask).val();
-        taskEditObj.description = $("#lblDesc" + idTask).html();        
+        taskEditObj.description = $("#lblDesc" + idTask).val();        
         taskEditObj.color = $('#colorTask' + idTask).val();
 
         justClickedEmojiButton = false;
@@ -392,7 +399,21 @@ function successSaveTask(data) {
     showAlert('Saved changes 🐙', 'success');
 }
 
+function showLoader(show) {
+    const loader = document.getElementById('loaderOverlay');
+    if (show) {
+        if (loader) loader.style.display = 'flex';
+    }
+    else {
+        //ocultar loader
+        if (loader) loader.style.display = 'none';
+    }
+
+}
+
 function ajaxTask(url, type, data, funSucess) {
+
+   
     $.ajax({
         url: url,
         type: type,
@@ -400,6 +421,10 @@ function ajaxTask(url, type, data, funSucess) {
         success: funSucess,
         error: function (xhr, status, error) {
             showAlert('Oops, an error occurred. Please try again 🔌', 'error');
+        },
+        complete: function () {
+            //ocultar loader
+            //if (loader) loader.style.display = 'none';
         }
     });
 }
