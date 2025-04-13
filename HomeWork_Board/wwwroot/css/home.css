@@ -107,17 +107,16 @@
     border: none;
 }
 
-.textBoxDivDraggableItem {    
+.textBoxDivDraggableItem {
     position: absolute;
     background-color: transparent;
     border: none;
-    margin-left: 10px;
-    margin-right: 10px;
 }
+
 
 .btnBarTxtBox {
     display: flex;
-    justify-content: space-evenly;    
+    justify-content: space-evenly;
 }
 
 .deleteTxtBoxCls {

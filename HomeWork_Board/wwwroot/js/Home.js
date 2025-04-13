@@ -60,7 +60,7 @@ var taskDiv =
     '</div>' +
     
     '<div>' +
-    '<textarea id="lblDescxId" class="descLabel text-center" contenteditable="false"></textarea>' +
+    '<textarea id="lblDescxId" class="descLabel text-center" placeholder="Description" contenteditable="false"></textarea>' +
     '<div id="btnBarEmojiDxId" style="visibility:hidden">' +
     '<button  type="button" class="emojiInput" id="emojiInputDxId">😄</button>' +
     '<emoji-picker style="display: none;" id="emojiPickerDxId"></emoji-picker>' +
@@ -433,7 +433,8 @@ function ajaxTask(url, type, data, funSucess) {
 
 var textBox =
 
-    '<div id="textBoxDivDraggablexId" class="card ui-widget-content textBoxDivDraggableItem" draggable="true"  style="display: inline-block;">' +
+    '<div id="textBoxDivDraggablexId" class="card ui-widget-content textBoxDivDraggableItem" draggable="true" style="min-width: 18rem;">' +
+    '<div class="card-body">' +
 
     '<div class="col-md-12 btnBarTxtBox" id="btnBarBoxTxtxId" style="visibility:hidden">' +
     '<button class="deleteTxtBoxCls" id="deleteTxtBoxId">X</button>' +
@@ -447,6 +448,7 @@ var textBox =
     '<emoji-picker style="display: none;" id="emojiPickerTxtxId"></emoji-picker>' +
     '</div>' +
 
+    '</div>'+
     '</div>';
     
 function chargeCreateTextBoxInitial(txtObj) {
